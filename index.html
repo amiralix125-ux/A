@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<title>WIN WIN GRAM</title> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+/* 
+ * Glassmorphism Red-Green Theme
+ */
+:root {
+    --color-red: #ff3366;
+    --color-green: #33ff99;
+    --color-dark: #0f0f14;
+    --color-text: #f0f0f5;
+    --color-muted: rgba(255, 255, 255, 0.6);
+    --accent-gradient: linear-gradient(135deg, var(--color-green) 0%, var(--color-red) 100%);
+    --glass-bg: rgba(255, 255, 255, 0.08);
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--color-dark); color: var(--color-text); height: 100vh;
+    display: flex; justify-content: center; align-items: center; direction: rtl; overflow: hidden; 
+}
+body::before {
+    content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; z-index: -1; opacity: 0.45; 
+    background: radial-gradient(circle at 50% 50%, var(--color-green) 0%, var(--color-red) 25%, var(--color-dark) 50%);
+    background-size: 400% 400%; animation: move-aura 30s ease infinite alternate;
+}
+@keyframes move-aura {
+    0% { background-position: 0% 0%; } 33% { background-position: 100% 0%; } 66% { background-position: 50% 100%; } 100% { background-position: 0% 0%; }
+}
+.chat-wrapper {
+    width: 95%; max-width: 600px; height: 90vh; border-radius: 24px; display: flex; flex-direction: column; overflow: hidden;
+    background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+.chat-header {
+    padding: 20px; background: var(--accent-gradient); font-size: 26px; font-weight: 900;
+    text-align: center; color: white; text-shadow: 0 0 5px rgba(0,0,0,0.4); letter-spacing: 2px; flex-shrink: 0;
+}
+#pinnedMessageBar {
+    padding: 10px 15px; background: rgba(255, 255, 255, 0.15); border-bottom: 2px solid var(--color-green);
+    display: none; align-items: center; justify-content: space-between; font-size: 14px; color: var(--color-text); flex-shrink: 0; gap: 10px; cursor: pointer;
+}
+#pinnedMessageBar .pin-content { flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-inline-end: 10px; }
+#pinnedMessageBar button { background: none; border: none; color: var(--color-muted); font-size: 18px; cursor: pointer; padding: 0; flex-shrink: 0; }
+#pinnedMessageBar button:hover { color: var(--color-red); }
+.chat-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+.chat-body::-webkit-scrollbar { width: 8px; }
+.chat-body::-webkit-scrollbar-thumb { background-color: var(--color-green); border-radius: 4px; }
+.chat-body::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); }
+.message {
+    max-width: 75%; padding: 14px 18px; border-radius: 20px; line-height: 1.6; word-wrap: break-word; font-size: 15px;
+    cursor: pointer; position: relative; transition: transform 0.1s, border 0.3s, box-shadow 0.3s;
+}
+.message:hover { transform: scale(1.01); }
+.user {
+    background: var(--accent-gradient); margin-right: auto; border-bottom-right-radius: 4px; color: white;
+    display: flex; flex-direction: column; align-items: flex-end; 
+}
+.user .message-content { width: 100%; }
+.bot { background: rgba(255, 255, 255, 0.1); margin-left: auto; border-bottom-left-radius: 4px; color: var(--color-text); }
+.message-status {
+    font-size: 14px; margin-top: 5px; margin-inline-start: 5px; color: rgba(255, 255, 255, 0.7);
+    display: block; line-height: 1; font-family: Arial, sans-serif; font-weight: bold; align-self: flex-end; transition: color 0.5s;
+}
+.message.user .message-status[data-status="read"] { color: var(--color-green); }
+.message img { max-width: 100%; margin-top: 8px; border-radius: 12px; display: block; }
+
+/* 
+ * اصلاحیه نوار ورودی (فشرده‌تر برای نمایش بهتر دکمه ارسال) 
+ */
+.chat-input {
+    padding: 8px 10px; /* کاهش پدینگ */
+    background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(15px); 
+    display: flex; gap: 8px; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0;
+}
+.chat-input input[type="text"] {
+    flex: 1; padding: 10px 14px; /* فیلد کوچک‌تر */
+    border-radius: 18px; border: none; outline: none;
+    background: rgba(255, 255, 255, 0.15); color: var(--color-text); font-size: 15px; transition: background 0.3s; box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+.chat-input input[type="text"]::placeholder { color: var(--color-muted); }
+.chat-input input[type="text"]:focus { background: rgba(255, 255, 255, 0.25); }
+.icon-btn {
+    background: rgba(255, 255, 255, 0.15); border: none; color: white; font-size: 18px; padding: 8px 12px;
+    border-radius: 15px; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0;
+}
+.icon-btn:hover { background: rgba(255, 255, 255, 0.25); }
+.send-btn {
+    background: var(--accent-gradient); border: none; padding: 10px 16px; border-radius: 18px; color: white;
+    cursor: pointer; font-weight: bold; box-shadow: 0 0 15px rgba(51, 255, 153, 0.7); transition: transform 0.2s; transform: scaleX(-1); flex-shrink: 0;
+}
+.send-btn:active { transform: scaleX(-1) scale(0.95); }
+
+#contextMenu {
+    position: absolute; z-index: 1000; min-width: 150px; border-radius: 12px; padding: 8px 0;
+    background: rgba(30, 30, 35, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    visibility: hidden; opacity: 0; transition: opacity 0.2s, visibility 0.2s;
+}
+.menu-item { padding: 10px 15px; font-size: 15px; cursor: pointer; color: var(--color-text); transition: background 0.1s; display: flex; align-items: center; gap: 10px; }
+.menu-item:hover { background: rgba(255, 255, 255, 0.15); }
+.menu-item.danger:hover { background: rgba(255, 51, 102, 0.2); }
+
+@media (max-width: 650px) {
+    body { height: auto; min-height: 100vh; align-items: flex-start; padding: 0; }
+    .chat-wrapper { width: 100%; max-width: none; height: 100vh; border-radius: 0; box-shadow: none; }
+    .chat-header { padding: 15px; font-size: 24px; }
+    .chat-body { padding: 10px; gap: 8px; }
+    .message { padding: 12px 16px; font-size: 14px; }
+    #contextMenu { min-width: 140px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="chat-wrapper">
+    <div class="chat-header">WIN WIN GRAM</div>
+    
+    <div id="pinnedMessageBar" style="display: none;" onclick="scrollToPinned()"></div>
+
+    <div class="chat-body" id="chatBody">
+        <div class="message bot">
+            <p class="message-content" style="margin: 0;">سلام! من آماده گفتگو هستم. (برای دیدن گزینه‌ها روی پیام کلیک کنید)</p>
+        </div>
+    </div>
+
+    <div class="chat-input">
+        <input type="file" id="imgInput" accept="image/*" hidden>
+        <button class="icon-btn" onclick="imgInput.click()" title="ارسال عکس">📷</button>
+        
+        <input type="text" id="textInput" placeholder="پیام خود را بنویسید..." dir="rtl">
+        <button class="send-btn" id="sendBtn" title="ارسال پیام">➤</button>
+    </div>
+</div>
+
+<div id="contextMenu"></div>
+
+<script>
+// ==========================================
+// تنظیمات هوش مصنوعی (Pollinations Logic)
+// ==========================================
+const SYSTEM_PROMPT = "You are a helpful assistant talking in Persian (Farsi). Always answer in Farsi.";
+let chatHistory = [{ role: "system", content: SYSTEM_PROMPT }];
+
+function getRandomSeed() {
+    return Math.floor(Math.random() * 10000000);
+}
+
+// تابع اصلی ارتباط با هوش مصنوعی
+async function callAI(userText, base64Image = null) {
+    const typingMsg = addMessage("...در حال نوشتن", "bot");
+    
+    const newMessage = { role: "user", content: "" };
+
+    if (base64Image) {
+        // ساختار مخصوص ویژن (متن + عکس)
+        newMessage.content = [
+            { type: "text", text: userText || "لطفا این تصویر را تحلیل کن." },
+            { type: "image_url", image_url: { url: base64Image } }
+        ];
+    } else {
+        newMessage.content = userText;
+    }
+    
+    // مدیریت حافظه (برای جلوگیری از طولانی شدن بیش از حد)
+    if (chatHistory.length > 10) chatHistory = [chatHistory[0], ...chatHistory.slice(-9)];
+    chatHistory.push(newMessage);
+
+    try {
+        const response = await fetch('https://text.pollinations.ai/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                messages: chatHistory,
+                seed: getRandomSeed(),
+                model: 'openai' // مدل قدرتمند برای ویژن و متن
+            })
+        });
+
+        if (!response.ok) throw new Error("Network error");
+        const aiText = await response.text();
+        
+        typingMsg.remove(); // حذف پیام "در حال نوشتن"
+        
+        if (aiText) {
+            addMessage(aiText, "bot");
+            chatHistory.push({ role: "assistant", content: aiText });
+            
+            // دو تیک شدن آخرین پیام کاربر
+            const lastUserMsg = document.querySelector('.message.user:last-of-type .message-status');
+            if(lastUserMsg) {
+                lastUserMsg.setAttribute('data-status', 'read');
+                lastUserMsg.innerHTML = '✔✔';
+            }
+        } else {
+            addMessage("پاسخی دریافت نشد.", "bot");
+        }
+    } catch (error) {
+        typingMsg.remove();
+        console.error("AI Error:", error);
+        addMessage("خطا در ارتباط با سرور.", "bot");
+    }
+}
+
+// ==========================================
+// متغیرها و توابع UI
+// ==========================================
+const chatBody = document.getElementById("chatBody");
+const textInput = document.getElementById("textInput");
+const imgInput = document.getElementById("imgInput");
+const contextMenu = document.getElementById("contextMenu");
+const pinnedBar = document.getElementById("pinnedMessageBar"); 
+const sendBtn = document.getElementById("sendBtn"); 
+
+let activeMessage = null; 
+
+function scrollToBottom() {
+    chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function scrollToPinned() {
+    const pinnedMsg = document.querySelector('.message[data-is-pinned="true"]');
+    if (pinnedMsg) pinnedMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function addMessage(content, type) {
+    const div = document.createElement("div");
+    div.className = "message " + type;
+    
+    const contentWrapper = document.createElement('div');
+    contentWrapper.className = 'message-content';
+    
+    if (typeof content === 'string') { 
+        contentWrapper.innerText = content;
+    } else if (content.tagName) {
+         contentWrapper.appendChild(content); 
+    }
+    
+    div.appendChild(contentWrapper);
+
+    if (type === 'user') {
+        const statusSpan = document.createElement('span');
+        statusSpan.className = 'message-status user-status';
+        statusSpan.setAttribute('data-status', 'sent'); 
+        statusSpan.innerHTML = '✔'; 
+        div.appendChild(statusSpan); 
+    }
+    
+    chatBody.appendChild(div);
+    scrollToBottom();
+    return div; 
+}
+
+// --- ارسال پیام متنی (متصل به AI) ---
+function sendText() {
+    const text = textInput.value.trim();
+    if (!text) return;
+    
+    const span = document.createElement("span");
+    span.innerText = text;
+    addMessage(span, "user"); 
+    
+    textInput.value = "";
+    
+    // فراخوانی هوش مصنوعی
+    callAI(text, null);
+}
+
+sendBtn.addEventListener("click", sendText);
+sendBtn.addEventListener("touchend", (e) => {
+    e.preventDefault(); 
+    sendText(); 
+    textInput.blur(); 
+});
+
+// --- ارسال عکس (متصل به Vision) ---
+imgInput.addEventListener("change", () => {
+    const file = imgInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64Image = e.target.result;
+        
+        const img = document.createElement("img");
+        img.src = base64Image;
+        addMessage(img, "user");
+        
+        imgInput.value = ''; 
+        
+        const caption = textInput.value.trim();
+        textInput.value = '';
+        callAI(caption, base64Image); // ارسال عکس به AI
+    }
+    reader.readAsDataURL(file);
+});
+
+textInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendText(); }
+});
+
+// ==========================================
+// منطق منوی کلیک راست (ساده شده)
+// ==========================================
+document.addEventListener('click', (e) => {
+    if (contextMenu.contains(e.target) || e.target.closest('.message') || e.target.closest('#pinnedMessageBar')) return;
+    hideContextMenu();
+});
+
+chatBody.addEventListener('click', (e) => {
+    const messageElement = e.target.closest('.message');
+    if (messageElement) {
+        if (e.target.tagName === 'IMG') return; // روی عکس منو باز نشود (اختیاری)
+        showContextMenu(e, messageElement);
+    } else { hideContextMenu(); }
+});
+
+function hideContextMenu() {
+    contextMenu.style.opacity = 0; contextMenu.style.visibility = 'hidden'; activeMessage = null;
+}
+
+function showContextMenu(e, messageElement) {
+    activeMessage = messageElement;
+    const isUserMessage = messageElement.classList.contains('user');
+    const rect = messageElement.getBoundingClientRect();
+    
+    contextMenu.innerHTML = ''; 
+
+    // --- فقط گزینه‌های درخواستی: پاسخ، کپی، پین، حذف ---
+    
+    // 1. پاسخ
+    contextMenu.appendChild(createMenuItem("↩️ پاسخ", () => replyMessage(messageElement)));
+    
+    // 2. کپی
+    contextMenu.appendChild(createMenuItem("📄 کپی", () => copyMessage()));
+    
+    // 3. پین
+    contextMenu.appendChild(createMenuItem("📌 پین", () => pinMessage(messageElement)));
+    
+    contextMenu.appendChild(document.createElement('hr'));
+
+    // 4. حذف
+    contextMenu.appendChild(createMenuItem("🗑️ حذف", () => deleteMessage(messageElement), true));
+    
+    // تنظیم موقعیت منو
+    const chatWrapperRect = chatBody.parentElement.getBoundingClientRect();
+    let menuX = isUserMessage ? rect.left - chatWrapperRect.left - 155 : rect.right - chatWrapperRect.left + 5;
+    
+    if (menuX < 10) menuX = 10;
+    if (menuX + 150 > chatWrapperRect.width) menuX = chatWrapperRect.width - 160;
+    
+    let menuY = rect.top - chatWrapperRect.top + chatBody.scrollTop;
+    if (menuY + 200 > chatBody.clientHeight) menuY = chatBody.clientHeight - 150;
+    
+    contextMenu.style.left = `${menuX}px`; contextMenu.style.top = `${menuY}px`;
+    contextMenu.style.visibility = 'visible'; contextMenu.style.opacity = 1;
+}
+
+function createMenuItem(text, action, isDanger = false) {
+    const item = document.createElement('div');
+    item.className = 'menu-item' + (isDanger ? ' danger' : '');
+    item.innerText = text;
+    item.onclick = (e) => { e.stopPropagation(); action(); hideContextMenu(); };
+    return item;
+}
+
+function unpinMessage() {
+    pinnedBar.style.display = 'none'; pinnedBar.innerHTML = '';
+    const currentlyPinned = document.querySelector('.message[data-is-pinned="true"]');
+    if (currentlyPinned) { currentlyPinned.style.border = ''; currentlyPinned.style.boxShadow = ''; currentlyPinned.removeAttribute('data-is-pinned'); }
+}
+
+function pinMessage(message) {
+    if (!message) return;
+    document.querySelectorAll('.message').forEach(m => { m.style.border = ''; m.style.boxShadow = ''; m.removeAttribute('data-is-pinned'); });
+    message.style.border = `2px solid yellow`; message.style.boxShadow = `0 0 10px yellow`; message.setAttribute('data-is-pinned', 'true');
+    let contentText = (message.querySelector('.message-content').innerText || "تصویر").substring(0, 50);
+    pinnedBar.innerHTML = `<span style="font-size: 20px;">📌</span><span class="pin-content">${contentText}</span><button onclick="event.stopPropagation(); unpinMessage()">✖️</button>`;
+    pinnedBar.style.display = 'flex'; scrollToBottom();
+}
+
+function replyMessage(message) {
+    const content = message.querySelector('.message-content').innerText.substring(0, 30);
+    textInput.value = `>>> پاسخ به: "${content.trim()}..."\n`; textInput.focus();
+}
+
+function copyMessage() {
+    if (!activeMessage) return;
+    const textToCopy = activeMessage.querySelector('.message-content').innerText || "[تصویر]";
+    navigator.clipboard.writeText(textToCopy).then(() => alert("کپی شد"));
+}
+
+function deleteMessage(message) {
+    if (message.getAttribute('data-is-pinned') === 'true') unpinMessage();
+    message.remove();
+}
+</script>
+
+</body>
+</html>
