@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>WIN WIN GRAM</title>
-<!-- تنظیمات ویوپورت برای موبایل (جلوگیری از زوم ناخواسته) -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
 /* 
@@ -31,31 +30,26 @@ body, html {
     display: flex; justify-content: center; align-items: center;
 }
 
-/* پس‌زمینه متحرک */
 body::before {
     content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; z-index: -1; opacity: 0.45; 
     background: radial-gradient(circle at 50% 50%, var(--color-green) 0%, var(--color-red) 25%, var(--color-dark) 50%);
     background-size: 400% 400%; animation: move-aura 30s ease infinite alternate;
 }
-@keyframes move-aura {
-    0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; }
-}
+@keyframes move-aura { 0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; } }
 
-/* کانتینر اصلی */
 .chat-wrapper {
     width: 95%; max-width: 600px; height: 90vh;
     border-radius: 24px; display: flex; flex-direction: column; overflow: hidden;
     background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    position: relative;
 }
 
-/* هدر */
 .chat-header {
     padding: 20px; background: var(--accent-gradient); font-size: 24px; font-weight: 900;
     text-align: center; color: white; text-shadow: 0 0 5px rgba(0,0,0,0.4); letter-spacing: 2px; flex-shrink: 0;
 }
 
-/* نوار پین */
 #pinnedMessageBar {
     padding: 10px 15px; background: rgba(255, 255, 255, 0.15); border-bottom: 2px solid var(--color-green);
     display: none; align-items: center; justify-content: space-between; font-size: 14px; color: var(--color-text);
@@ -63,14 +57,12 @@ body::before {
 }
 #pinnedMessageBar .pin-content { flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* فضای چت */
 .chat-body {
     flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
 }
 .chat-body::-webkit-scrollbar { width: 6px; }
 .chat-body::-webkit-scrollbar-thumb { background-color: var(--color-green); border-radius: 4px; }
 
-/* پیام‌ها */
 .message {
     max-width: 80%; padding: 12px 16px; border-radius: 20px; line-height: 1.6; word-wrap: break-word; font-size: 15px;
     cursor: pointer; position: relative; transition: transform 0.1s;
@@ -84,7 +76,24 @@ body::before {
 .message-status { font-size: 12px; margin-top: 4px; color: rgba(255,255,255,0.7); align-self: flex-end; }
 .message img { max-width: 100%; margin-top: 8px; border-radius: 12px; display: block; }
 
-/* نوار ورودی */
+/* استایل کادر پیش‌نمایش (اضافه شده به تم شما) */
+#preview-container {
+    display: none; /* پیش‌فرض مخفی */
+    padding: 10px 15px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    align-items: center; gap: 15px;
+    animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+#preview-thumb { height: 60px; width: auto; border-radius: 8px; border: 2px solid var(--color-green); }
+.preview-info { flex: 1; font-size: 12px; color: #ccc; }
+.close-preview {
+    background: rgba(255,50,50,0.8); color: white; border: none; width: 24px; height: 24px;
+    border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+
 .chat-input {
     padding: 15px; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(15px);
     display: flex; gap: 10px; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0;
@@ -102,7 +111,6 @@ body::before {
     cursor: pointer; font-size: 20px; height: 45px; display: flex; align-items: center; justify-content: center; transform: scaleX(-1);
 }
 
-/* منوی کلیک راست */
 #contextMenu {
     position: fixed; z-index: 2000; min-width: 160px; border-radius: 12px; padding: 5px 0;
     background: rgba(30, 30, 35, 0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1);
@@ -112,11 +120,8 @@ body::before {
 .menu-item:hover { background: rgba(255, 255, 255, 0.15); }
 .menu-item.danger { color: #ff4444; }
 
-/* ریسپانسیو موبایل */
 @media (max-width: 768px) {
-    .chat-wrapper {
-        width: 100%; height: 100%; height: 100dvh; border-radius: 0; border: none; max-width: none;
-    }
+    .chat-wrapper { width: 100%; height: 100%; height: 100dvh; border-radius: 0; border: none; max-width: none; }
     .chat-header { padding-top: max(15px, env(safe-area-inset-top)); }
     .chat-input { padding-bottom: max(15px, env(safe-area-inset-bottom)); }
 }
@@ -136,12 +141,19 @@ body::before {
         </div>
     </div>
 
+    <!-- کانتینر پیش‌نمایش (اضافه شده) -->
+    <div id="preview-container">
+        <img id="preview-thumb" src="" alt="Preview">
+        <div class="preview-info">عکس انتخاب شد.<br>می‌تونی متن هم بنویسی.</div>
+        <button class="close-preview" onclick="cancelImage()">✕</button>
+    </div>
+
     <div class="chat-input">
-        <input type="file" id="imgInput" accept="image/*" hidden>
+        <input type="file" id="imgInput" accept="image/*" hidden onchange="handleImageSelect(event)">
         <button class="icon-btn" onclick="imgInput.click()" title="ارسال عکس">📷</button>
         
         <input type="text" id="textInput" placeholder="پیام..." dir="rtl">
-        <button class="send-btn" id="sendBtn">➤</button>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
     </div>
 </div>
 
@@ -153,14 +165,13 @@ body::before {
 // ==========================================
 const SYSTEM_PROMPT = "You are a helpful assistant talking in Persian (Farsi). Always answer in Farsi.";
 let chatHistory = [{ role: "system", content: SYSTEM_PROMPT }];
+let pendingImageBase64 = null; // برای ذخیره موقت عکس
 
 function getRandomSeed() { return Math.floor(Math.random() * 10000000); }
 
 async function callAI(userText, base64Image = null) {
-    // نمایش وضعیت "در حال نوشتن"
     const typingMsg = addMessage("در حال نوشتن...", "bot");
     
-    // آماده سازی پیام کاربر برای ارسال به API
     const newMessage = { role: "user", content: "" };
     if (base64Image) {
         newMessage.content = [
@@ -171,7 +182,6 @@ async function callAI(userText, base64Image = null) {
         newMessage.content = userText;
     }
     
-    // مدیریت حافظه (فقط 10 پیام آخر)
     if (chatHistory.length > 10) chatHistory = [chatHistory[0], ...chatHistory.slice(-9)];
     chatHistory.push(newMessage);
 
@@ -189,18 +199,13 @@ async function callAI(userText, base64Image = null) {
         if (!response.ok) throw new Error("AI Error");
         const aiText = await response.text();
         
-        typingMsg.remove(); // حذف پیام در حال نوشتن
+        typingMsg.remove(); 
         
         if (aiText) {
             addMessage(aiText, "bot");
             chatHistory.push({ role: "assistant", content: aiText });
-            
-            // به روز رسانی تیک پیام کاربر (دو تیک شدن)
             const lastUserStatus = document.querySelector('.message.user:last-of-type .message-status');
-            if(lastUserStatus) {
-                lastUserStatus.setAttribute('data-status', 'read');
-                lastUserStatus.innerHTML = '✔✔';
-            }
+            if(lastUserStatus) lastUserStatus.innerHTML = '✔✔';
         }
     } catch (error) {
         typingMsg.remove();
@@ -217,7 +222,8 @@ const textInput = document.getElementById("textInput");
 const imgInput = document.getElementById("imgInput");
 const contextMenu = document.getElementById("contextMenu");
 const pinnedBar = document.getElementById("pinnedMessageBar"); 
-const sendBtn = document.getElementById("sendBtn"); 
+const previewContainer = document.getElementById("preview-container");
+const previewThumb = document.getElementById("preview-thumb");
 let activeMessage = null; 
 
 function scrollToBottom() { chatBody.scrollTop = chatBody.scrollHeight; }
@@ -233,7 +239,7 @@ function addMessage(content, type) {
     const contentWrapper = document.createElement('div');
     contentWrapper.className = 'message-content';
     
-    if (typeof content === 'string') contentWrapper.innerText = content;
+    if (typeof content === 'string') contentWrapper.innerHTML = content;
     else contentWrapper.appendChild(content);
     
     div.appendChild(contentWrapper);
@@ -250,42 +256,67 @@ function addMessage(content, type) {
     return div; 
 }
 
-// --- ارسال پیام متنی ---
-function sendText() {
-    const text = textInput.value.trim();
-    if (!text) return;
-    
-    addMessage(text, "user"); 
-    textInput.value = "";
-    
-    callAI(text, null); // فراخوانی هوش مصنوعی
+// --- مدیریت انتخاب عکس (پیش‌نمایش) ---
+function handleImageSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            pendingImageBase64 = e.target.result;
+            // نمایش پیش‌نمایش
+            previewThumb.src = pendingImageBase64;
+            previewContainer.style.display = 'flex';
+            textInput.focus();
+        };
+        reader.readAsDataURL(file);
+    }
 }
 
-// مدیریت دکمه ارسال (لمسی و کلیک)
-sendBtn.addEventListener("click", sendText);
-sendBtn.addEventListener("touchend", (e) => { e.preventDefault(); sendText(); textInput.blur(); });
-textInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendText(); });
+// --- لغو عکس ---
+function cancelImage() {
+    pendingImageBase64 = null;
+    imgInput.value = ""; 
+    previewContainer.style.display = 'none';
+    previewThumb.src = "";
+}
 
-// --- ارسال عکس ---
-imgInput.addEventListener("change", () => {
-    const file = imgInput.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const base64 = e.target.result;
-        const img = document.createElement("img");
-        img.src = base64;
-        addMessage(img, "user");
-        imgInput.value = ''; 
-        const caption = textInput.value.trim();
-        textInput.value = '';
-        callAI(caption, base64);
+// --- ارسال نهایی (متن + عکس احتمالی) ---
+function sendMessage() {
+    const text = textInput.value.trim();
+    
+    // اگر نه متنی هست و نه عکسی، کاری نکن
+    if (!text && !pendingImageBase64) return;
+
+    // ساخت محتوای پیام کاربر
+    let userContent = "";
+    if (pendingImageBase64) {
+        userContent += `<img src="${pendingImageBase64}" style="max-width:100%;border-radius:12px;margin-bottom:5px;">`;
     }
-    reader.readAsDataURL(file);
-});
+    if (text) {
+        userContent += `<div>${text}</div>`;
+    }
+
+    // نمایش در چت
+    addMessage(userContent, "user");
+
+    // آماده سازی داده‌ها برای AI
+    const imgToSend = pendingImageBase64;
+    const txtToSend = text;
+
+    // پاکسازی
+    textInput.value = "";
+    cancelImage();
+
+    // ارسال به هوش مصنوعی
+    callAI(txtToSend, imgToSend);
+}
+
+// کلید اینتر
+textInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
+
 
 // ==========================================
-// منوی کلیک راست (Context Menu)
+// منوی کلیک راست (Context Menu) - بدون تغییر
 // ==========================================
 document.addEventListener('click', (e) => {
     if (!contextMenu.contains(e.target) && !e.target.closest('.message')) hideContextMenu();
@@ -293,9 +324,18 @@ document.addEventListener('click', (e) => {
 
 chatBody.addEventListener('click', (e) => {
     const msgEl = e.target.closest('.message');
-    if (msgEl && e.target.tagName !== 'IMG') showContextMenu(e, msgEl);
+    // اجازه کلیک راست حتی روی عکس (با برداشتن شرط tagName !== 'IMG')
+    if (msgEl) showContextMenu(e, msgEl); 
     else hideContextMenu();
 });
+
+// پشتیبانی از موبایل (Long Press) برای منو
+let touchTimer;
+chatBody.addEventListener('touchstart', (e) => {
+    const msgEl = e.target.closest('.message');
+    if(msgEl) touchTimer = setTimeout(() => showContextMenu(e, msgEl), 600);
+});
+chatBody.addEventListener('touchend', () => clearTimeout(touchTimer));
 
 function hideContextMenu() {
     contextMenu.style.opacity = 0; contextMenu.style.visibility = 'hidden'; activeMessage = null;
@@ -305,19 +345,17 @@ function showContextMenu(e, messageElement) {
     activeMessage = messageElement;
     contextMenu.innerHTML = ''; 
 
-    // آیتم‌های منو
     contextMenu.appendChild(createMenuItem("↩️ پاسخ", () => replyMessage(messageElement)));
     contextMenu.appendChild(createMenuItem("📄 کپی", () => copyMessage()));
     contextMenu.appendChild(createMenuItem("📌 پین", () => pinMessage(messageElement)));
     contextMenu.appendChild(document.createElement('hr'));
     contextMenu.appendChild(createMenuItem("🗑️ حذف", () => deleteMessage(messageElement), true));
     
-    // پوزیشن دهی هوشمند
-    let x = e.clientX;
-    let y = e.clientY;
+    let x = e.clientX || (e.touches && e.touches[0].clientX);
+    let y = e.clientY || (e.touches && e.touches[0].clientY);
     const menuW = 160;
     
-    if (window.innerWidth < 768) { // موبایل: وسط صفحه یا نزدیک تاچ
+    if (window.innerWidth < 768) { 
         const rect = messageElement.getBoundingClientRect();
         x = (window.innerWidth - menuW) / 2;
         y = rect.bottom + 10;
@@ -338,11 +376,10 @@ function createMenuItem(text, action, isDanger = false) {
     return item;
 }
 
-// عملیات منو
 function pinMessage(message) {
     document.querySelectorAll('.message').forEach(m => { m.style.border = ''; m.removeAttribute('data-is-pinned'); });
     message.style.border = `2px solid yellow`; message.setAttribute('data-is-pinned', 'true');
-    const txt = message.innerText.substring(0, 30);
+    const txt = message.innerText.substring(0, 30) || "تصویر";
     pinnedBar.innerHTML = `<span style="font-size:18px;">📌</span><span class="pin-content">${txt}</span><button onclick="event.stopPropagation(); unpinMessage()" style="background:none;border:none;color:white;">✖️</button>`;
     pinnedBar.style.display = 'flex';
 }
